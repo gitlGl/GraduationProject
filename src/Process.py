@@ -1,8 +1,8 @@
 import cv2, dlib
-from src.facerg import FaceRg
+from src.Facerg import FaceRg
 import numpy as np
 import time
-from src.models import models 
+from src.GlobalVariable import models 
 
 #此用于面部特征计算进程
 def process_(Q1, Q2):

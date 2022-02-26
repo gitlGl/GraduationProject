@@ -1,9 +1,10 @@
-from src.face import Face
+from src.Face import Face
 from threading import Timer
 import numpy as np
 
 
-gflag = 1  #用于定时器退出判断
+from src.GlobalVariable import flag
+
 
 class FaceRg():
 
@@ -29,8 +30,8 @@ class FaceRg():
     #每一段时间重置face_data值
     def reset(self):
         self.face_data = np.random.random(128).astype('float32')
-        global gflag
-        if gflag == 1:
+      
+        if  flag.gflag == 1:
             Timer(10, self.reset).start()
 
 ##用于退出定时器线程
@@ -40,6 +41,5 @@ class timerexec():
         self.threadhandle = thandle
 
     def __del__(self):
-        global gflag
-        gflag = 0
+        flag.gflag = 0
         self.threadhandle.cancel()

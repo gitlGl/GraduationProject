@@ -1,6 +1,6 @@
 
-from src.creatuser import CreatUser
-from src.mymd5 import MyMd5
+from src.Creatuser import CreatUser
+from src.MyMd5 import MyMd5
 import sys
 from PyQt6.QtWidgets import QApplication,QWidget
 

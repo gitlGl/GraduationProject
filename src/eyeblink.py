@@ -5,7 +5,7 @@ from scipy.spatial import distance as dist
 from imutils import face_utils
 from PyQt6.QtCore import pyqtSignal
 from src.Process import *
-from src.models import models
+from src.GlobalVariable import models
 
 class EyeBlink(QThread):
     singal = pyqtSignal(list)

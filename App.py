@@ -44,10 +44,10 @@ class APP(QObject):
             if self.ui.btn1.isChecked(): 
                 if self.open_capture.isRunning():
                     self.open_capture.timer1.start(200)
-        else:        
+        else:     
             if self.ui.btn1.isChecked():
                 if self.open_capture.isRunning():
-                     if not psutil.Process(self.p.pid).is_running:
+                     if psutil.Process(self.p.pid).status() == "stopped":
                         psutil.Process(self.p.pid).resume()
                         self.open_capture.timer1.start(200)
                         return 
@@ -91,6 +91,10 @@ class APP(QObject):
         else:        
             if self.ui.btn2.isChecked():
                 if self.open_capture.isRunning():
+                     if psutil.Process(self.p.pid).status() == "stopped":
+                        psutil.Process(self.p.pid).resume()
+                        self.open_capture.timer3.start(1000)
+                        return 
                      self.open_capture.timer3.start(1000)
 
         if  ((self.ui.btn1.isChecked() is False) and (self.ui.btn2.isChecked()is False)):
@@ -104,6 +108,7 @@ class APP(QObject):
     def open(self):
         self.ui.btn3.clicked.disconnect(self.open)
         self.ui.btn3.clicked.connect(self.close)
+        self.ui.btn3.setText("关闭摄像头")
         self.open_capture.start()
         if not self.p.is_alive():
             self.p.start()
@@ -117,6 +122,7 @@ class APP(QObject):
        
         self.ui.btn3.clicked.connect(self.open)
         self.ui.btn3.clicked.disconnect(self.close)
+        self.ui.btn3.setText("打开摄像头")
         self.open_capture.close()  #关闭摄像头
         self.open_capture.terminate()  #关闭线程
         self.open_capture.wait()
@@ -142,7 +148,7 @@ class APP(QObject):
 
 
     
-    def closeEvent(self, event):  #关闭线程
+    def closeEvent(self, event): #关闭线程
         self.open_capture.terminate()
         self.open_capture.wait()
         self.open_capture.close()        

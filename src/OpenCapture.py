@@ -8,8 +8,8 @@ from multiprocessing import Process, Queue
 from src.Process import *
 from PyQt6.QtCore import pyqtSignal
 #from PIL import Image, ImageDraw, ImageFont
-from src.eyeblink import EyeBlink
-from src.models import models
+from src.EyeBlink import EyeBlink
+from src.GlobalVariable import models
 
 class OpenCapture(QThread):
     """

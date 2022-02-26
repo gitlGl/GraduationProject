@@ -7,7 +7,7 @@ class models():
     detector = dlib.get_frontal_face_detector()  # 获取人脸模型
     encoder = dlib.face_recognition_model_v1(
                 "./resources/dlib_face_recognition_resnet_model_v1.dat")
-class timer():
+class flag():
     def __init__(self):
         pass
     gflag = 1

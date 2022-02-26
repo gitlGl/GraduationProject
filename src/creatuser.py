@@ -1,11 +1,11 @@
 import random
-from src.mymd5 import MyMd5
+from src.MyMd5 import MyMd5
 from PyQt6.QtWidgets import QFileDialog
-import face_recognition, dlib
+import face_recognition
 import numpy as np
-from src.studentdb import StudentDb
+from src.Studentdb import StudentDb
 import os, cv2
-from src.models import models
+from src.GlobalVariable import models
 class CreatUser():
 
     def __init__(self):

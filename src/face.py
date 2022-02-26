@@ -1,8 +1,8 @@
 import dlib
 import numpy as np
-from src.studentdb import StudentDb
-from src.log import Log
-from src.models import models
+from src.Studentdb import StudentDb
+from src.Log import Log
+from src.GlobalVariable import models
 
 class Face():
 
