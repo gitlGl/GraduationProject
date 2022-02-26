@@ -8,8 +8,9 @@ from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
 class Ui(QWidget):
-    def __init__(self):
+    def __init__(self,thread):
         super().__init__()
+        self.thread = thread
         self.setFixedSize(480, 600)
         #self.setStyleSheet ("border:2px groove gray;border-radius:10px;padding:2px 2px;")
         Vlayout = QVBoxLayout()
@@ -43,6 +44,11 @@ class Ui(QWidget):
         self.setLayout(allvlaout)
         
         self.setWindowTitle("测试")
+    def closeEvent(self, event): #关闭线程
+        self.thread.terminate()
+        self.thread.wait()
+        if hasattr(self.thread,"cap"):
+            self.thread.close()   
 
 
 

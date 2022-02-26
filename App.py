@@ -5,18 +5,18 @@ from src.Process import *
 from multiprocessing import Process, Queue
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtCore import pyqtSlot, QObject
-from src.Ui import Ui
+from src.Ui import Ui 
 class APP(QObject):
 
     def __init__(self):
         super().__init__()
         self.creat_folder()
-        self.ui = Ui()
         self.Q1 = Queue()  #open_capture
         self.Q2 = Queue()
         self.p = Process(target=process_, args=(self.Q1, self.Q2))
         self.p.daemon = True
         self.open_capture = OpenCapture(self.Q1, self.Q2)
+        self.ui = Ui(self.open_capture)
         self.open_capture.emit_img.connect(self.set_normal_img)
         self.ui.btn1.clicked.connect(self.open_eye)
         self.ui.btn2.clicked.connect(self.open_normal)
@@ -76,7 +76,7 @@ class APP(QObject):
     def open_normal(self):
         if self.ui.btn1.isChecked():
             self.ui.btn1.setChecked(False)
-            if self.open_capture.isRunning():
+            if self.open_capture.isRunning():#彻底关闭定时器
                 while self.open_capture.timer1.isActive():
                     self.open_capture.timer1.stop()
                 while self.open_capture.timer2.isActive():
@@ -120,6 +120,8 @@ class APP(QObject):
         self.open_capture.start()
         if not self.p.is_alive():
             self.p.start()
+            if  ((self.ui.btn1.isChecked() is False) and (self.ui.btn2.isChecked()is False)):
+                psutil.Process(self.p.pid).suspend()  #挂起进程
 
         if self.ui.btn1.isChecked():
             if psutil.Process(self.p.pid).status() == "stopped":
@@ -164,10 +166,7 @@ class APP(QObject):
 
 
     
-    def closeEvent(self, event): #关闭线程
-        self.open_capture.terminate()
-        self.open_capture.wait()
-        self.open_capture.close()        
+    
       
 if __name__ == '__main__':
 
