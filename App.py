@@ -43,6 +43,10 @@ class APP(QObject):
                     self.Q2.get()
             if self.ui.btn1.isChecked(): 
                 if self.open_capture.isRunning():
+                    if psutil.Process(self.p.pid).status() == "stopped":
+                        psutil.Process(self.p.pid).resume()
+                        self.open_capture.timer1.start(200)
+                        return
                     self.open_capture.timer1.start(200)
         else:     
             if self.ui.btn1.isChecked():
@@ -66,7 +70,7 @@ class APP(QObject):
                     pass
                 while self.Q2.qsize() != 0:
                     self.Q2.get()
-                if self.open_capture.isRunning():                 
+                if psutil.Process(self.p.pid).status() == "running":                  
                     psutil.Process(self.p.pid).suspend()  #挂起进程
                 
     def open_normal(self):
@@ -87,7 +91,11 @@ class APP(QObject):
                     self.Q2.get()
             if self.ui.btn2.isChecked():
                 if self.open_capture.isRunning():
-                    self.open_capture.timer3.start(1000)    
+                     if psutil.Process(self.p.pid).status() == "stopped":
+                        psutil.Process(self.p.pid).resume()
+                        self.open_capture.timer3.start(1000)
+                        return
+                     self.open_capture.timer3.start(1000)    
         else:        
             if self.ui.btn2.isChecked():
                 if self.open_capture.isRunning():
@@ -103,7 +111,7 @@ class APP(QObject):
                     pass
                 while self.Q2.qsize() != 0:
                     self.Q2.get()
-                if self.open_capture.isRunning():                    
+                if psutil.Process(self.p.pid).status() == "running":                     
                     psutil.Process(self.p.pid).suspend()  #挂起进程
     def open(self):
         self.ui.btn3.clicked.disconnect(self.open)
@@ -112,11 +120,18 @@ class APP(QObject):
         self.open_capture.start()
         if not self.p.is_alive():
             self.p.start()
-        else:
-            psutil.Process(self.p.pid).resume()  #恢复子进程
+
         if self.ui.btn1.isChecked():
+            if psutil.Process(self.p.pid).status() == "stopped":
+                        psutil.Process(self.p.pid).resume()
+                        self.open_capture.timer1.start(200)
+                        return
             self.open_capture.timer1.start(200)
         if self.ui.btn2.isChecked():
+            if psutil.Process(self.p.pid).status() == "stopped":
+                        psutil.Process(self.p.pid).resume()
+                        self.open_capture.timer3.start(1000)
+                        return 
             self.open_capture.timer3.start(1000)               
     def close(self):
        
@@ -141,7 +156,8 @@ class APP(QObject):
             pass
         while self.Q2.qsize() != 0:
             self.Q2.get()
-        psutil.Process(self.p.pid).suspend()  #挂起进程
+        if psutil.Process(self.p.pid).status() == "running":   
+            psutil.Process(self.p.pid).suspend()  #挂起进程
         self.ui.qlabel.clear()
         time.sleep(0.5)
         self.ui.qlabel.clear()
