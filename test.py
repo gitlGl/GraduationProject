@@ -2,7 +2,7 @@
 from src.Creatuser import CreatUser
 from src.MyMd5 import MyMd5
 import sys
-from PyQt6.QtWidgets import QApplication,QWidget
+from PyQt5.QtWidgets import QApplication,QWidget
 
 
 class test(QWidget):

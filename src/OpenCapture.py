@@ -1,12 +1,12 @@
 import cv2, copy
-from PyQt6.QtCore import QThread, QTimer
+from PyQt5.QtCore import QThread, QTimer
 import numpy as np
-from PyQt6.QtGui import QImage
+from PyQt5.QtGui import QImage
 import dlib
 from multiprocessing import Process, Queue
 from multiprocessing import Process, Queue
 from src.Process import *
-from PyQt6.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 #from PIL import Image, ImageDraw, ImageFont
 from src.EyeBlink import EyeBlink
 from src.GlobalVariable import models

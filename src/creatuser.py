@@ -1,6 +1,6 @@
 import random
 from src.MyMd5 import MyMd5
-from PyQt6.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog
 import face_recognition
 import numpy as np
 from src.Studentdb import StudentDb
