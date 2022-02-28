@@ -16,6 +16,7 @@ class OpenCapture(QThread):
    用于启动普通识别模式
     """
     emit_img = pyqtSignal(QImage)
+    emit_result = pyqtSignal(str)
 
     def __init__(self, Q1, Q2):
         super().__init__()
@@ -46,13 +47,13 @@ class OpenCapture(QThread):
                 self.emit_img.emit(p)
 
     def to_put(self):
-        #print("test")
+        
         self.timer3.stop()
         #控制队列数量为1
         if self.Q1.qsize() == 0:
             self.Q1.put(self.frame)
         if not self.Q2.empty():
-            print(self.Q2.get())
+            self.emit_result.emit(self.Q2.get())
 
         self.timer3.start(2000)
 
@@ -68,15 +69,13 @@ class OpenCapture(QThread):
                 self.timer2.start(1000)
                 self.list_img.clear()
                 return
-            print(flag)
             self.list_img.clear()
         self.timer1.start(200)
 
     def get_result(self):
         self.timer2.stop()
         if self.Q2.qsize != 0:
-            result = self.Q2.get()
-            print(result)
+            self.emit_result.emit(self.Q2.get())
             self.timer1.start(200)
         else:
             self.timer2.start(1000)

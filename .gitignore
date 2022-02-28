@@ -5,3 +5,4 @@ resources/
 *.db
 simsun.ttc
 __pycahe__/
+settings.json

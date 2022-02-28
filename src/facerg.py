@@ -18,7 +18,7 @@ class FaceRg():
         face_data = self.face_obj.encodeface(rgbImage, raw_face)
         flag = self.face_obj.compare_faces(face_data, self.face_data, axis=0)
         if flag < 0.4:
-            return "同一个人"
+            return "0"
         else:
             result, flag = self.face_obj.rg_face(img, face_data)
             if flag:
