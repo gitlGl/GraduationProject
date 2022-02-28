@@ -17,10 +17,11 @@ class APP(QObject):
         self.creat_folder()
         self.Q1 = Queue()  # open_capture
         self.Q2 = Queue()
-        self.p = Process(target=process_, args=(self.Q1, self.Q2))
-        self.p.daemon = True
         self.open_capture = OpenCapture(self.Q1, self.Q2)
         self.ui = Ui(self.open_capture)
+        self.p = Process(target=process_, args=(self.Q1, self.Q2,self.ui.share))
+        self.p.daemon = True
+        
         self.open_capture.emit_img.connect(self.set_normal_img)
         self.ui.btn1.clicked.connect(self.open_eye)
         self.ui.btn2.clicked.connect(self.open_normal)
@@ -55,11 +56,11 @@ class APP(QObject):
                         psutil.Process(self.p.pid).resume()
                         if not self.open_capture.timer1.isActive():
                             self.open_capture.timer1.start(200)
-                            self.ui.qlabel1.setText("提示：请眨眼睛")
+                            self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
                             return
                     if not self.open_capture.timer1.isActive():
                         self.open_capture.timer1.start(200)
-                        self.ui.qlabel1.setText("提示：请眨眼睛")
+                        self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
         else:  # 判断被按下的的按钮
             if self.ui.btn1.isChecked():
                 if self.open_capture.isRunning():
@@ -67,11 +68,11 @@ class APP(QObject):
                         psutil.Process(self.p.pid).resume()
                         if not self.open_capture.timer1.isActive():
                             self.open_capture.timer1.start(200)
-                            self.ui.qlabel1.setText("提示：请眨眼睛")
+                            self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
                             return
                     if not self.open_capture.timer1.isActive():
                         self.open_capture.timer1.start(200)
-                        self.ui.qlabel1.setText("提示：请眨眼睛")
+                        self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
            # 两个按钮同时是False的状态
         if ((self.ui.btn1.isChecked() is False) and (self.ui.btn2.isChecked() is False)):
 
@@ -160,11 +161,11 @@ class APP(QObject):
                 psutil.Process(self.p.pid).resume()
                 if not self.open_capture.timer1.isActive():
                     self.open_capture.timer1.start(200)
-                    self.ui.qlabel1.setText("提示：请眨眼睛")
+                    self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
                     return
             if not self.open_capture.timer1.isActive():
                 self.open_capture.timer1.start(200)
-                self.ui.qlabel1.setText("提示：请眨眼睛")
+                self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
         if self.ui.btn2.isChecked():
             if psutil.Process(self.p.pid).status() == "stopped":
                 psutil.Process(self.p.pid).resume()

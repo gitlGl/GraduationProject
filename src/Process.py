@@ -5,7 +5,7 @@ import time
 from src.GlobalVariable import models 
 
 #此用于面部特征计算进程
-def process_(Q1, Q2):
+def process_(Q1, Q2,share):
     face_rg = FaceRg()
 
     while True:
@@ -16,6 +16,6 @@ def process_(Q1, Q2):
             location_faces = models.detector(gray)
             if len(location_faces) == 1:
                 raw_face = models.predictor(gray, location_faces[0])
-                result = face_rg.rg(img, rgbImage, raw_face)
+                result = face_rg.rg(img, rgbImage, raw_face,share)
                 Q2.put(result)
         time.sleep(1)

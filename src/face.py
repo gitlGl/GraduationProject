@@ -18,7 +18,7 @@ class Face():
         return np.linalg.norm(face_encoding - test_encoding, axis=axis)
 
     #与数据库人脸对比，相似度小于0.5则认为是同一个人
-    def rg_face(self, img, face_data):
+    def rg_face(self, img, face_data,distance):
 
         student = StudentDb()
         list = []
@@ -28,7 +28,7 @@ class Face():
         distances = self.compare_faces(np.array(list), face_data, axis=1)
         min_distance = np.argmin(distances)
         print(distances[min_distance])
-        if distances[min_distance] < 0.4:
+        if distances[min_distance] < distance:
             tembyte = np.ndarray.dumps(list[min_distance])
             student.conn.close()
             log = Log(tembyte)

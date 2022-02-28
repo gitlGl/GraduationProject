@@ -1,19 +1,21 @@
 
+from turtle import distance
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout
 from src.Process import *
 from PyQt5.QtWidgets import QSlider
-from PyQt5.QtCore import pyqtSlot,QTimer
+from PyQt5.QtCore import pyqtSlot,QTimer,Qt
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-
+import multiprocessing
 class Ui(QWidget):
     def __init__(self,thread):
         super().__init__()
         self.thread = thread
+        self.share = multiprocessing.Value("f",0.4)
+
         self.thread.emit_result.connect(self.show_result)
-        self.former_result = ""
         self.timer = QTimer()
         self.timer.timeout.connect(self.clear_qlabel2)
         
@@ -39,8 +41,20 @@ class Ui(QWidget):
         self.btn2.setFixedSize(100,20)
         self.qlabel1 = QLabel()
         self.qlabel2 = QLabel()
+        self.qlabel3 = QLabel()
+        self.qlabel3.setFixedSize(30,20)
+        self.qlabel3.setFont(QFont("Arial",10))
+        self.qlabel3.setAlignment(Qt.AlignCenter)
+        self.qlabel3.setText("0.4")
         self.slider =  QSlider(Qt.Horizontal)
-        self.slider.setTickPosition(QSlider.TicksAbove)
+        self.slider.setTickPosition(QSlider.TicksBelow)
+        self.slider.setMaximum(12)
+        self.slider.setMinimum(0)
+        self.slider.setSingleStep(1)
+        self.slider.setValue(8)
+        self.slider.setTickInterval(1)
+        self.slider.valueChanged.connect(self.valueChange)
+
         #self.slider.setTickPosition()
         
         self.slider.setFixedSize(100,20)
@@ -56,6 +70,7 @@ class Ui(QWidget):
         Hlayout2.addWidget(self.qlabel1)
         Hlayout2.addWidget(self.qlabel2)
         Hlayout2.addWidget(self.slider)
+        Hlayout2.addWidget(self.qlabel3)
         self.groupbox_2.setLayout(Hlayout2)
         
         #Vlayout.addLayout(Hlayout)
@@ -76,22 +91,14 @@ class Ui(QWidget):
             self.thread.close()
     @pyqtSlot(str)          
     def show_result(self,str_result):
-        if str_result == "0":
-            self.qlabel2.setText(self.former_result)
-        else:    
-            self.former_result = str_result
-            self.qlabel2.setText(str_result)
+        self.qlabel2.setText(str_result)
         self.timer.start(3000)
     def clear_qlabel2(self):
         self.timer.stop()
         self.qlabel2.clear()
+    def valueChange(self):
+        distance = round(self.slider.value()*0.05,2)
+        self.share.value = distance
+        self.qlabel3.setText(str(distance))
 
-
-
-
-
-
-
-
-
-
+        

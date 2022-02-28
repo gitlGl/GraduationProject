@@ -13,16 +13,18 @@ class FaceRg():
         self.face_obj = Face()
         self.refreshthread = Timer(10, self.reset).start()
         self.a = timerexec(self.refreshthread)
-
-    def rg(self, img, rgbImage, raw_face):
+        self.former_result = ""
+   
+    def rg(self, img, rgbImage, raw_face,share):
         face_data = self.face_obj.encodeface(rgbImage, raw_face)
         flag = self.face_obj.compare_faces(face_data, self.face_data, axis=0)
-        if flag < 0.4:
-            return "0"
+        if flag < share.value:
+            return self.former_result
         else:
-            result, flag = self.face_obj.rg_face(img, face_data)
-            if flag:
+            result, flag1 = self.face_obj.rg_face(img, face_data,share.value)
+            if flag1:
                 self.face_data = face_data
+                self.former_result = result
                 return result
             else:
                 return result
