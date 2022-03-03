@@ -25,6 +25,8 @@ class Face():
         for i in student.select("vector"):
             i = np.loads(i[0])
             list.append(i)
+        if len(list) == 0:
+            return "请先注册用户",False  
         distances = self.compare_faces(np.array(list), face_data, axis=1)
         min_distance = np.argmin(distances)
         print(distances[min_distance])

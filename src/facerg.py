@@ -3,7 +3,7 @@ from threading import Timer
 import numpy as np
 
 
-from src.GlobalVariable import flag
+from src.GlobalVariable import GlobalFlag
 
 
 class FaceRg():
@@ -33,7 +33,7 @@ class FaceRg():
     def reset(self):
         self.face_data = np.random.random(128).astype('float32')
       
-        if  flag.gflag == 1:
+        if  GlobalFlag.gflag == 1:
             Timer(10, self.reset).start()
 
 ##用于退出定时器线程
@@ -43,5 +43,5 @@ class timerexec():
         self.threadhandle = thandle
 
     def __del__(self):
-        flag.gflag = 0
+        GlobalFlag.gflag = 0
         self.threadhandle.cancel()

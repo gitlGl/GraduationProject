@@ -1,4 +1,4 @@
-from src.Studentdb import StudentDb
+from .Studentdb import StudentDb
 import datetime
 import cv2
 import os

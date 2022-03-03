@@ -4,25 +4,24 @@ import numpy as np
 from PyQt5.QtGui import QImage
 import dlib
 from multiprocessing import Process, Queue
-from multiprocessing import Process, Queue
 from src.Process import *
 from PyQt5.QtCore import pyqtSignal
 #from PIL import Image, ImageDraw, ImageFont
-from src.EyeBlink import EyeBlink
-from src.GlobalVariable import models
-
+from .LivenessDdetection import LivenessDdetection
+from .GlobalVariable import GlobalFlag
 class OpenCapture(QThread):
     """
    用于启动普通识别模式
     """
     emit_img = pyqtSignal(QImage)
     emit_result = pyqtSignal(str)
+    emit_text = pyqtSignal(str)
 
     def __init__(self, Q1, Q2):
         super().__init__()
 
         self.list_img = []
-        self.check_eye = EyeBlink()
+        self.livecheck  = LivenessDdetection()
         self.timer1 = QTimer()
         self.timer1.timeout.connect(self.collect_frame)
         self.timer2 = QTimer()
@@ -59,23 +58,33 @@ class OpenCapture(QThread):
 
     def collect_frame(self):
         self.timer1.stop()
-        if len(self.list_img) <= 1:
-            self.list_img.append(self.frame)
-        elif len(self.list_img) == 2:
-            list_img = copy.deepcopy(self.list_img)
-            flag = self.check_eye.compare2faces(list_img)
-            if flag:
-                self.Q1.put(self.list_img[0])
-                self.timer2.start(1000)
+        if not GlobalFlag.gflag2:
+            img = copy.deepcopy(self.frame)
+            flag = self.livecheck.comput_mouth(img)
+            if flag == True:
+                self.emit_text.emit("提示：请看镜头眨眼睛")
+            self.timer1.start(200)   
+        else:
+     
+            if len(self.list_img) <= 1:
+                self.list_img.append(self.frame)
+            elif len(self.list_img) == 2:
+                list_img = copy.deepcopy(self.list_img)
+                flag = self.livecheck.compare2faces(list_img)
+                if flag:
+                    self.Q1.put(self.list_img[0])
+                    self.timer2.start(1000)
+                    self.list_img.clear()
+                    return
                 self.list_img.clear()
-                return
-            self.list_img.clear()
-        self.timer1.start(200)
+            self.timer1.start(200)
 
     def get_result(self):
         self.timer2.stop()
         if self.Q2.qsize != 0:
             self.emit_result.emit(self.Q2.get())
+            GlobalFlag.gflag2 = False
+            self.emit_text.emit("提示：请张嘴")
             self.timer1.start(200)
         else:
             self.timer2.start(1000)
@@ -91,7 +100,7 @@ def convertToQtFormat(frame_show):
     bytesPerLine = ch * w
     convertToQtFormat = QImage(frame_show.data, w, h, bytesPerLine,
                                QImage.Format.Format_RGB888)
-    p = convertToQtFormat.scaled(480, 600)
+    p = convertToQtFormat.scaled(480, 530)
     return p
 
 

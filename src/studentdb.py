@@ -15,7 +15,7 @@ class StudentDb():
         user_name           CHAR(50)    NOT NULL,
         password        char(20)    NOT NULL,
         img_path        char(40),
-        vector         blob       NOT NULL,
+        vector         blob        ,
         date_time           text ,      
         salt              char(10)  NOT NULL ,
         cout              INT           );''')

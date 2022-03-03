@@ -2,12 +2,12 @@ import sys
 import os
 import psutil
 from PyQt5.QtWidgets import QApplication
-from src.OpenCapture import OpenCapture
-from src.Process import *
+from src import OpenCapture
+from src import process_
 from multiprocessing import Process, Queue
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import pyqtSlot, QObject
-from src.Ui import Ui
+from src import Ui
 
 
 class APP(QObject):
@@ -22,7 +22,7 @@ class APP(QObject):
         self.p = Process(target=process_, args=(self.Q1, self.Q2,self.ui.share))
         self.p.daemon = True
         
-        self.open_capture.emit_img.connect(self.set_normal_img)
+        
         self.ui.btn1.clicked.connect(self.open_eye)
         self.ui.btn2.clicked.connect(self.open_normal)
         self.ui.btn3.clicked.connect(self.open)
@@ -31,9 +31,7 @@ class APP(QObject):
         if not os.path.exists("img_information"):  # 判断是否存在文件夹如果不存在则创建文件夹
             os.makedirs("img_information")
 
-    @pyqtSlot(QImage)
-    def set_normal_img(self, image):
-        self.ui.qlabel.setPixmap(QPixmap.fromImage(image))
+    
 
 # 开启眨眼识别
 
@@ -56,11 +54,11 @@ class APP(QObject):
                         psutil.Process(self.p.pid).resume()
                         if not self.open_capture.timer1.isActive():
                             self.open_capture.timer1.start(200)
-                            self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
+                            self.ui.qlabel1.setText("提示：请张嘴")
                             return
                     if not self.open_capture.timer1.isActive():
                         self.open_capture.timer1.start(200)
-                        self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
+                        self.ui.qlabel1.setText("提示：请张嘴")
         else:  # 判断被按下的的按钮
             if self.ui.btn1.isChecked():
                 if self.open_capture.isRunning():
@@ -68,11 +66,11 @@ class APP(QObject):
                         psutil.Process(self.p.pid).resume()
                         if not self.open_capture.timer1.isActive():
                             self.open_capture.timer1.start(200)
-                            self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
+                            self.ui.qlabel1.setText("提示：请张嘴")
                             return
                     if not self.open_capture.timer1.isActive():
                         self.open_capture.timer1.start(200)
-                        self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
+                        self.ui.qlabel1.setText("提示：请张嘴")
            # 两个按钮同时是False的状态
         if ((self.ui.btn1.isChecked() is False) and (self.ui.btn2.isChecked() is False)):
 
@@ -84,7 +82,7 @@ class APP(QObject):
                 self.open_capture.timer1.stop()
             while self.open_capture.timer2.isActive():
                 self.open_capture.timer2.stop()
-
+            self.ui.qlabel1.clear()   
             if self.p.is_alive():
                 if psutil.Process(self.p.pid).status() == "running":
             
@@ -161,11 +159,11 @@ class APP(QObject):
                 psutil.Process(self.p.pid).resume()
                 if not self.open_capture.timer1.isActive():
                     self.open_capture.timer1.start(200)
-                    self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
+                    self.ui.qlabel1.setText("提示：请张嘴")
                     return
             if not self.open_capture.timer1.isActive():
                 self.open_capture.timer1.start(200)
-                self.ui.qlabel1.setText("提示：请看镜头眨眼睛")
+                self.ui.qlabel1.setText("提示：请张嘴")
         if self.ui.btn2.isChecked():
             if psutil.Process(self.p.pid).status() == "stopped":
                 psutil.Process(self.p.pid).resume()

@@ -10,16 +10,21 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import multiprocessing
 class Ui(QWidget):
-    def __init__(self,thread):
+    def __init__(self,open_capture):
         super().__init__()
-        self.thread = thread
+        #self.setWindowFlags(Qt.FramelessWindowHint)
+        #self.setStyleSheet('QWidget{background:transparent}') 
+        self.open_capture  = open_capture
+        self.open_capture.emit_img.connect(self.set_normal_img)
         self.share = multiprocessing.Value("f",0.4)
 
-        self.thread.emit_result.connect(self.show_result)
+        self.open_capture.emit_result.connect(self.show_result)
+        self.open_capture.emit_text.connect(self.change_text)
         self.timer = QTimer()
         self.timer.timeout.connect(self.clear_qlabel2)
         
-        self.setFixedSize(480, 600)
+        #self.setFixedSize(480, 600)
+        self.resize(480, 600)
         #self.setStyleSheet ("border:2px groove gray;border-radius:10px;padding:2px 2px;")
         self.groupbox_1 = QGroupBox( self)                       # 1
         self.groupbox_2 = QGroupBox( self)
@@ -32,8 +37,8 @@ class Ui(QWidget):
 
         self.btn2 = QCheckBox(self)
         self.btn1 = QCheckBox(self)
-        self.btn1.setText("眨眼模式")
-        self.btn2.setText("普通模式")
+        self.btn1.setText("活体识别")
+        self.btn2.setText("普通识别")
         self.btn3 = QPushButton()
         self.btn3.setText("打开摄像头")
         self.btn4 = QPushButton()
@@ -84,21 +89,38 @@ class Ui(QWidget):
         self.setLayout(allvlaout)
   
         self.setWindowTitle("测试")
-    def closeEvent(self, event): #关闭线程
-        self.thread.terminate()
-        self.thread.wait()
-        if hasattr(self.thread,"cap"):
-            self.thread.close()
+    
+    #显示识别结果        
     @pyqtSlot(str)          
     def show_result(self,str_result):
+        self.qlabel2.clear()
         self.qlabel2.setText(str_result)
-        self.timer.start(3000)
+        if not self.timer.isActive():
+            self.timer.start(3000)
+
+    #清除识别结果        
     def clear_qlabel2(self):
         self.timer.stop()
         self.qlabel2.clear()
+
+    #刻度值槽函数    
     def valueChange(self):
         distance = round(self.slider.value()*0.05,2)
         self.share.value = distance
         self.qlabel3.setText(str(distance))
+    @pyqtSlot(str)    
+    def change_text(self,str):
+        self.qlabel1.clear()
+        self.qlabel1.setText(str)
 
-        
+    @pyqtSlot(QImage)
+    def set_normal_img(self, image):
+        self.qlabel.setPixmap(QPixmap.fromImage(image))
+        self.qlabel.setScaledContents(True)  
+
+
+    def closeEvent(self, event): #关闭线程
+        self.open_capture.terminate()
+        self.open_capture.wait()
+        if hasattr(self.thread,"cap"):
+            self.open_capture.close()
