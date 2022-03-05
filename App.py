@@ -32,7 +32,7 @@ class APP(QObject):
             os.makedirs("img_information")
 
     
-
+#完善批量创建用户功能
 # 开启眨眼识别
 
     def open_eye(self):
