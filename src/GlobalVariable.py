@@ -10,5 +10,5 @@ class models():
 class GlobalFlag():
     def __init__(self):
         pass
-    gflag = 1
+ 
     gflag2 = False

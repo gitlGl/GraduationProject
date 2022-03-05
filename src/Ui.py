@@ -1,5 +1,5 @@
 
-from turtle import distance
+from .Creatuser import CreatUser
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout
 from src.Process import *
@@ -9,13 +9,14 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import multiprocessing
+
 class Ui(QWidget):
     def __init__(self,open_capture):
         super().__init__()
         #self.setWindowFlags(Qt.FramelessWindowHint)
         #self.setStyleSheet('QWidget{background:transparent}') 
         self.open_capture  = open_capture
-        self.open_capture.emit_img.connect(self.set_normal_img)
+        #self.open_capture.emit_img.connect(self.set_normal_img)
         self.share = multiprocessing.Value("f",0.4)
 
         self.open_capture.emit_result.connect(self.show_result)
@@ -41,9 +42,15 @@ class Ui(QWidget):
         self.btn2.setText("普通识别")
         self.btn3 = QPushButton()
         self.btn3.setText("打开摄像头")
+        self.btn3.setIcon(QIcon("./resources/摄像头_关闭.png"))
         self.btn4 = QPushButton()
-        self.btn1.setFixedSize(100,20)
-        self.btn2.setFixedSize(100,20)
+        self.btn4.setIcon(QIcon("./resources/文件.png"))
+        self.btn4.setText("批量创建用户")
+        self.btn5 = QPushButton()
+        self.btn5.setText("帮助")
+        self.btn5.setIcon(QIcon("./resources/帮助.png"))
+        # self.btn1.setFixedSize(100,20)
+        # self.btn2.setFixedSize(100,20)
         self.qlabel1 = QLabel()
         self.qlabel2 = QLabel()
         self.qlabel3 = QLabel()
@@ -67,15 +74,25 @@ class Ui(QWidget):
         self.slider.height()
         #self.btn3.setStyleSheet("border:2px groove gray;border-radius:10px;padding:2px 2px;background-color: yellow")
         self.qlabel = QLabel()
-        self.btn3.setFixedSize(200,20)
+       
+        
+        self.btn3.setStyleSheet("border:0px")
+        self.btn4.setStyleSheet("border:0px;")
+        self.btn5.setStyleSheet("border:0px;")
+        self.btn4.clicked.connect(self.creat_user)
+
+        Hlayout.addWidget(self.btn3)
         Hlayout.addWidget(self.btn2)
         Hlayout.addWidget(self.btn1)
-        Hlayout.addWidget(self.btn3)
+        Hlayout.addWidget(self.btn4)
+        Hlayout.addWidget(self.btn5)
         self.groupbox_1.setLayout(Hlayout)
         Hlayout2.addWidget(self.qlabel1)
         Hlayout2.addWidget(self.qlabel2)
         Hlayout2.addWidget(self.slider)
         Hlayout2.addWidget(self.qlabel3)
+        
+        
         self.groupbox_2.setLayout(Hlayout2)
         
         #Vlayout.addLayout(Hlayout)
@@ -118,9 +135,14 @@ class Ui(QWidget):
         self.qlabel.setPixmap(QPixmap.fromImage(image))
         self.qlabel.setScaledContents(True)  
 
+    def creat_user(self):
+        CreatUser()
 
     def closeEvent(self, event): #关闭线程
         self.open_capture.terminate()
         self.open_capture.wait()
-        if hasattr(self.thread,"cap"):
+        if hasattr(self.open_capture,"cap"):
+            
             self.open_capture.close()
+        
+           

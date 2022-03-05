@@ -1,13 +1,14 @@
 import cv2, dlib
-from src.Facerg import FaceRg
+from threading import Timer
 import numpy as np
 import time
+import gc
 from src.GlobalVariable import models 
-
+from src.Face import Face
+from src.GlobalVariable import GlobalFlag
 #此用于面部特征计算进程
 def process_(Q1, Q2,share):
-    face_rg = FaceRg()
-
+    face_rg = Face()
     while True:
         while not Q1.empty():
             img = Q1.get()
@@ -18,4 +19,5 @@ def process_(Q1, Q2,share):
                 raw_face = models.predictor(gray, location_faces[0])
                 result = face_rg.rg(img, rgbImage, raw_face,share)
                 Q2.put(result)
+       
         time.sleep(1)

@@ -8,8 +8,8 @@ from multiprocessing import Process, Queue
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import pyqtSlot, QObject
 from src import Ui
-
-
+from PyQt5.QtGui import *
+import time
 class APP(QObject):
 
     def __init__(self):
@@ -109,7 +109,7 @@ class APP(QObject):
                 while self.open_capture.timer2.isActive():
                     self.open_capture.timer2.stop()
                 self.ui.qlabel1.clear()   
-                while self.Q1.qsize() != 0:  # 清空队列
+                while self.Q1.qsize() != 0:  # 清空队列 
                     pass
                 while self.Q2.qsize() != 0:
                     self.Q2.get()
@@ -145,9 +145,11 @@ class APP(QObject):
                     psutil.Process(self.p.pid).suspend()  # 挂起进程
 
     def open(self):
+        #self.open_capture.emit_img.connect(self.ui.set_normal_img)
         self.ui.btn3.clicked.disconnect(self.open)
         self.ui.btn3.clicked.connect(self.close)
         self.ui.btn3.setText("关闭摄像头")
+        self.ui.btn3.setIcon(QIcon("./resources/摄像头.png"))
         self.open_capture.start()
         if not self.p.is_alive():
             self.p.start()
@@ -177,7 +179,9 @@ class APP(QObject):
 
         self.ui.btn3.clicked.connect(self.open)
         self.ui.btn3.clicked.disconnect(self.close)
+        #self.open_capture.emit_img.disconnect(self.ui.set_normal_img)
         self.ui.btn3.setText("打开摄像头")
+        self.ui.btn3.setIcon(QIcon("./resources/摄像头_关闭.png"))
         self.open_capture.close()  # 关闭摄像头
         self.open_capture.terminate()  # 关闭线程
         self.open_capture.wait()
@@ -192,16 +196,19 @@ class APP(QObject):
             self.open_capture.timer1.stop()
         while self.open_capture.timer2.isActive():
             self.open_capture.timer2.stop()
-        self.ui.qlabel1.clear()      
+    
         while self.Q1.qsize() != 0:  # 清空队列
             pass
         while self.Q2.qsize() != 0:
             self.Q2.get()
         if psutil.Process(self.p.pid).status() == "running":
             psutil.Process(self.p.pid).suspend()  # 挂起进程
+        
         self.ui.qlabel.clear()
-        # time.sleep(1)
-        self.ui.qlabel.clear()
+
+        print("ttt")
+        
+                
 
 
 if __name__ == '__main__':

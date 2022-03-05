@@ -6,23 +6,13 @@ import numpy as np
 from src.Studentdb import StudentDb
 import os, cv2
 from src.GlobalVariable import models
+import xlrd
+from pathlib import Path
+from PyQt5.QtCore import pyqtSignal
 class CreatUser():
-
-    def __init__(self,part_information = None):
-        if part_information is not None:
-            self.information = {}
-            self.information["user_name"] = part_information["user_name"]
-            self.information['salt'] = MyMd5().create_salt()
-            self.information["img_path"] = self.get_img_path(part_information["id_number"])
-            self.information["id_number"] = part_information["id_number"]
-            self.information["password"] = self.get_pass_word(part_information["password"],self.information["salt"])
-            self.information["vector"] = self.get_vector(part_information["id_number"],part_information["img_path"])
-            self.creat_user()
-    def creat_user(self):
-        StudentDb().insert(self.information["id_number"], self.information["user_name"], self.information["password"], 
-        self.information["img_path"], self.information["vector"],
-                           self.information["salt"])
-
+    def __init__(self):
+        self.creat_user()
+        
     def get_img_path(self, id_number = 123456):
 
         path = "img_information/{0}/log".format(str(id_number))
@@ -44,8 +34,14 @@ class CreatUser():
         if img_path == None:
             file_path, _ = QFileDialog.getOpenFileName(
                 None, "选择图片", "c:\\", "Image files(*.jpg *.gif *.png)")
-        else: file_path =  img_path       
+        else: file_path =  img_path
+           
         img = cv2.imread(file_path)
+        if img is None:
+            return
+       
+       
+       
         cv2.imwrite(
             "img_information/" + str(id_number) + "/" + str(id_number) +
             ".jpg", img)
@@ -59,9 +55,77 @@ class CreatUser():
         face_data = np.ndarray.dumps(face_data)
         return face_data
 
+    def creat_user(self):
+        path ,_= QFileDialog.getOpenFileName(
+                None, "选择文件", "c:\\", "files(*.xlsx )")
+        if path == '':
+            return
+    
+        book = xlrd.open_workbook(path)
+        sheets = book.sheets()
+        list_problem = []
+        for sheet in sheets:
+            rows = sheet.nrows
+            for i in range(1,rows):
+                list1 =  sheet.row_values(rowx=i)
+                if type(list1[0]) is str:
+                    if list1[0].isdigit():
+                        list1[0] = int(list1[0])
 
+                elif type(list1[0]) is float:
+                   list1[0] = int(list1[0])
+                else:
+                    string = ""
+                    for j in list1:
+                        string = string + str(j) + "  "
+                    string = "第{0}行: ".format(i)+string
+                    list_problem.append(string)
+                    continue
+                   
+                list1[1] = str(list1[1])
+                list1[2] = str(list1[2])
+                list1[3] = str(list1[3])
+                path =  Path(list1[3])
+               
+                if path.is_file():
+                    pass
+                else:
+                    string = ""
+                    for k in list1:
+                        string = string + str(k)+ "  "
+                    string = "第{0}行: ".format(i)+string
+                    list_problem.append(string)
+                    continue
+       
+                list2 = ["id_number","user_name","password","img_path" ]
+                dic = dict(zip(list2,list1))
+                information =  self.set_information(dic)
+                self.insert_user(information)
+                print("正确信息:",dic)
+        for f in list_problem:        
+            print("错误信息：",f) 
+
+    def set_information(self, part_information):
+        information = {}
+        if part_information is not None:
+            information["user_name"] = part_information["user_name"]
+            information['salt'] = MyMd5().create_salt()
+            information["img_path"] = self.get_img_path(part_information["id_number"])
+            information["id_number"] = part_information["id_number"]
+            information["password"] = self.get_pass_word(part_information["password"],information["salt"])
+            if part_information["img_path"] is not None:
+                information["vector"] = self.get_vector(part_information["id_number"],part_information["img_path"])
+            else:information["vector"] = self.get_vector(part_information["id_number"])
+        return information
+
+    def insert_user(self,information):
+        StudentDb().insert_user(information["id_number"], information["user_name"], information["password"], 
+        information["img_path"], information["vector"],
+                           information["salt"])
+           
 
     def get_id(self, id_number=12345):
+        
 
         return random.randint(1, 20)
     def get_user_name(self, user_name="林"):

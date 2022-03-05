@@ -8,13 +8,11 @@ from src.Process import *
 from src.GlobalVariable import models
 from src.GlobalVariable import GlobalFlag
 
-class LivenessDdetection(QThread):
+class LivenessDetection(QThread):
     singal = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
-
-        models.detector = dlib.get_frontal_face_detector()  # 获取人脸模型
         self.img1 = np.random.randint(255, size=(900, 800, 3), dtype=np.uint8)
         self.img2 = np.random.randint(255, size=(900, 800, 3), dtype=np.uint8)
         self.singal.connect(self.compare2faces)

@@ -3,28 +3,33 @@ from src.Creatuser import CreatUser
 from src.MyMd5 import MyMd5
 import sys
 from PyQt5.QtWidgets import QApplication,QWidget
+import random
+class timerexec():
 
+    def __init__(self):
+        print('这是构造函数')
+
+    def __del__(self):
+        print('这是析构函数')
 
 class test(QWidget):
     def __init__(self):
         super().__init__()
-        self.create_user = CreatUser()
-        self.id_number = self.create_user.get_id()
-        self.user_name = self.create_user.get_user_name()
-        self.img_path = self.create_user.get_img_path(self.id_number)
-        self.salt = MyMd5().create_salt()
-        self.password = self.create_user.get_pass_word(self.salt)
-        self.vector = self.create_user.get_vector(self.id_number)
-        self.create_user.creat_user(self.id_number,self.user_name,
-        self.password,self.img_path,self.vector,self.salt)
+        self.id = random.randint(1, 20)
+       
+        #self.vector = CreatUser().get_vector(self.id)
+        dic = {"id_number":self.id,"user_name":"lin","password":"123456","img_path":None }
+        CreatUser(dic)
+        a = timerexec()
 
+        
 
 if __name__ == '__main__':
   
 
     app = QApplication(sys.argv)
     
-    test = test()
+    test1 = test()
     
     
     app.exec()

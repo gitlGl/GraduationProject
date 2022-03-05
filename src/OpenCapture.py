@@ -7,7 +7,7 @@ from multiprocessing import Process, Queue
 from src.Process import *
 from PyQt5.QtCore import pyqtSignal
 #from PIL import Image, ImageDraw, ImageFont
-from .LivenessDdetection import LivenessDdetection
+from .LivenessDetection import LivenessDetection
 from .GlobalVariable import GlobalFlag
 class OpenCapture(QThread):
     """
@@ -21,7 +21,7 @@ class OpenCapture(QThread):
         super().__init__()
 
         self.list_img = []
-        self.livecheck  = LivenessDdetection()
+        self.livecheck  = LivenessDetection()
         self.timer1 = QTimer()
         self.timer1.timeout.connect(self.collect_frame)
         self.timer2 = QTimer()
