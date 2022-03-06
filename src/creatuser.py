@@ -9,6 +9,7 @@ from src.GlobalVariable import models
 import xlrd
 from pathlib import Path
 from PyQt5.QtCore import pyqtSignal
+from src.Studentdb import StudentDb
 class CreatUser():
     def __init__(self):
         pass
@@ -59,26 +60,25 @@ class CreatStudentUser(CreatUser):
         book = xlrd.open_workbook(path)
         sheets = book.sheets()
         list_problem = []
-        def error_string(row,column,error_information):
-            return "第{0}行第{1}列: ".format(row,column) + str(error_information)
+        student =StudentDb()
+
         for sheet in sheets:
             rows = sheet.nrows
             for i in range(1,rows):
                 list1 =  sheet.row_values(rowx=i)
                 if type(list1[0]) is str:
                     if list1[0].isdigit() and len(list1[0]) == 13:
-                        list1[0] = int(list1[0])
+                        user = student.c.execute("select id_number from student where id_number = {} ".format(int(list1[0]))).fetchall()
+                        if len(user) == 1:
+                            list_problem.append("第{0}行第1列,用户已存在: ".format(i) + str(int(list1[0])))
+                            continue    
+                        else: list1[0] = int(list1[0])    
                     else: 
-                        list_problem.append(error_string(i,"1",list1[0]))
+                        list_problem.append("第{0}行第1列: ".format(i) + str(int(list1[0])))
                         continue
-                elif type(list1[0]) is float:
-                    int_ = int(list1[0])
-                    if  len(str(int_)) == 13:
-                        list1[0] = int(list1[0])
-                    else:   
-                        list_problem.append(error_string(i,"1",int(list1[0])))
-                        continue
-                   
+                else:  
+                    list_problem.append("第{0}行第1列格式非文本格式 ".format(i) + str(list1[0]))
+                    continue
                 list1[1] = str(list1[1])
                 list1[2] = str(list1[2])
 
@@ -96,6 +96,7 @@ class CreatStudentUser(CreatUser):
                 dic = dict(zip(list2,list1))
                 information =  self.set_information(dic)
                 self.insert_user(information)
+               
                
         for j in list_problem:        
             print("错误信息：",j)
