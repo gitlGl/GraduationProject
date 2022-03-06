@@ -1,32 +1,39 @@
 import sys
 import os
 import psutil
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QWidget
 from src import OpenCapture
-from src import process_
 from multiprocessing import Process, Queue
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import pyqtSlot, QObject
 from src import Ui
 from PyQt5.QtGui import *
 import time
+from src import LoginUi
+from src.Process import process_student_rg
 class APP(QObject):
 
     def __init__(self):
         super().__init__()
+        self.login_ui = LoginUi()
+        self.login_ui.emitsingal.connect(self.init)
+        self.login_ui.show()
+        
+    @pyqtSlot()
+    def init(self):
+        del self.login_ui
         self.creat_folder()
         self.Q1 = Queue()  # open_capture
         self.Q2 = Queue()
         self.open_capture = OpenCapture(self.Q1, self.Q2)
         self.ui = Ui(self.open_capture)
-        self.p = Process(target=process_, args=(self.Q1, self.Q2,self.ui.share))
+        self.ui.show()
+        self.p = Process(target=process_student_rg, args=(self.Q1, self.Q2,self.ui.share))
         self.p.daemon = True
-        
         
         self.ui.btn1.clicked.connect(self.open_eye)
         self.ui.btn2.clicked.connect(self.open_normal)
         self.ui.btn3.clicked.connect(self.open)
-
     def creat_folder(self):
         if not os.path.exists("img_information"):  # 判断是否存在文件夹如果不存在则创建文件夹
             os.makedirs("img_information")
@@ -207,14 +214,11 @@ class APP(QObject):
         
         self.ui.qlabel.clear()
 
-        print("ttt")
-        
-                
-
-
+ 
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
+
     ex = APP()
-    ex.ui.show()
+    #ex.ui.show()
     app.exec_()

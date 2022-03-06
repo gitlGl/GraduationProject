@@ -1,5 +1,5 @@
 
-from .Creatuser import CreatUser
+from .Creatuser import CreatStudentUser
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout
 from src.Process import *
@@ -16,7 +16,7 @@ class Ui(QWidget):
         #self.setWindowFlags(Qt.FramelessWindowHint)
         #self.setStyleSheet('QWidget{background:transparent}') 
         self.open_capture  = open_capture
-        #self.open_capture.emit_img.connect(self.set_normal_img)
+        self.open_capture.emit_img.connect(self.set_normal_img)
         self.share = multiprocessing.Value("f",0.4)
 
         self.open_capture.emit_result.connect(self.show_result)
@@ -79,7 +79,7 @@ class Ui(QWidget):
         self.btn3.setStyleSheet("border:0px")
         self.btn4.setStyleSheet("border:0px;")
         self.btn5.setStyleSheet("border:0px;")
-        self.btn4.clicked.connect(self.creat_user)
+        self.btn4.clicked.connect(self.creat_student_user)
 
         Hlayout.addWidget(self.btn3)
         Hlayout.addWidget(self.btn2)
@@ -135,8 +135,8 @@ class Ui(QWidget):
         self.qlabel.setPixmap(QPixmap.fromImage(image))
         self.qlabel.setScaledContents(True)  
 
-    def creat_user(self):
-        CreatUser()
+    def creat_student_user(self):
+        CreatStudentUser()
 
     def closeEvent(self, event): #关闭线程
         self.open_capture.terminate()

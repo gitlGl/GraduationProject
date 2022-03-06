@@ -23,9 +23,12 @@ class test(QWidget):
         # a = timerexec()
 
     def te(self,str):
+        def t():
+            print("test")
         print(type(str))
         print ("" is type(str))
-        pass    
+        t()
+        
 
 if __name__ == '__main__':
   

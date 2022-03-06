@@ -4,11 +4,11 @@ import numpy as np
 import time
 import gc
 from src.GlobalVariable import models 
-from src.Face import Face
+from src.Face import  StudentRgFace
 from src.GlobalVariable import GlobalFlag
 #此用于面部特征计算进程
-def process_(Q1, Q2,share):
-    face_rg = Face()
+def process_student_rg(Q1, Q2,share):
+    face_rg = StudentRgFace()
     while True:
         while not Q1.empty():
             img = Q1.get()

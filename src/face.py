@@ -10,12 +10,7 @@ from threading import Timer
 class Face():
 
     def __init__(self):
-        self.flag = True
-        self.face_data = np.random.random(128).astype('float32')
-        self.former_result = ""
-        self.refreshthread = Timer(10, self.reset)
-        self.refreshthread.setDaemon(True)   
-        self.refreshthread.start()
+        
         pass
     #为人脸编码
     def encodeface(self, rgbImage, raw_face):
@@ -28,6 +23,7 @@ class Face():
 
     #与数据库人脸对比，相似度小于0.5则认为是同一个人
     def rg_face(self,face_data,share):
+
 
         student = StudentDb()
         list = []
@@ -46,29 +42,36 @@ class Face():
         else:
             return  False
 
-    def rg(self, img, rgbImage, raw_face,share):#优化识别流程，识别成功后避免同一人频繁识别，频繁记录数据
-        face_data = self.encodeface(rgbImage, raw_face)
-        flag = self.compare_faces(face_data, self.face_data, axis=0)
-        if flag < share.value:
-            return self.former_result
-        else:
-            result = self.rg_face(face_data,share.value)
-            if result:
-                self.face_data = face_data
-                
-                student = StudentDb()
-                log = Log(result,img,student)
-                student.conn.close()
-                self.former_result = "验证成功：" + log.item[1]
-                return "验证成功：" + log.item[1]
-            else:
-                return "验证失败"
-
+    
     #每一段时间重置face_data值
-    def reset(self):
-        self.face_data = np.random.random(128).astype('float32')
-        self.refreshthread = Timer(10, self.reset)
-        self.refreshthread.setDaemon(True) 
-        self.refreshthread.start() 
-        
-   
+    
+class StudentRgFace(Face):
+        def __init__(self):
+            super().__init__()
+            self.face_data = np.random.random(128).astype('float32')
+            self.former_result = ""
+            self.refreshthread = Timer(10, self.reset)
+            self.refreshthread.setDaemon(True)   
+            self.refreshthread.start()
+        def reset(self):
+            self.face_data = np.random.random(128).astype('float32')
+            self.refreshthread = Timer(10, self.reset)
+            self.refreshthread.setDaemon(True) 
+            self.refreshthread.start() 
+        def rg(self, img, rgbImage, raw_face,share):#优化识别流程，识别成功后避免同一人频繁识别，频繁记录数据
+            face_data = self.encodeface(rgbImage, raw_face)
+            flag = self.compare_faces(face_data, self.face_data, axis=0)
+            if flag < share.value:
+                return self.former_result
+            else:
+                result = self.rg_face(face_data,share.value)
+                if result:
+                    self.face_data = face_data
+                    
+                    student = StudentDb()
+                    log = Log(result,img,student)
+                    student.conn.close()
+                    self.former_result = "验证成功：" + log.item[1]
+                    return "验证成功：" + log.item[1]
+                else:
+                    return "验证失败"
