@@ -5,13 +5,13 @@ from PyQt5.QtCore import pyqtSignal
 USER_PWD = {
         'la_vie': 'password'
     }
-
-
+from src.Studentdb import StudentDb
+from src.MyMd5 import MyMd5
 class LoginUi(QWidget):
     emitsingal  = pyqtSignal()
     def __init__(self):
         super().__init__()
-        self.resize(300, 100)
+        self.resize(400, 300)
 
         self.user_label = QLabel('Username:', self)
         self.pwd_label = QLabel('Password:', self)
@@ -20,8 +20,11 @@ class LoginUi(QWidget):
         self.login_button = QPushButton('Log in', self)
         self.signin_button = QPushButton('Sign in', self)
 
-        self.grid_layout = QGridLayout()
-        self.h_layout = QHBoxLayout()
+        #self.grid_layout = QGridLayout()
+        self.h_user_layout = QHBoxLayout()
+        self.h_password_layout = QHBoxLayout()
+        self.h_in_layout = QHBoxLayout()
+        
         self.v_layout = QVBoxLayout()
 
         self.lineedit_init()
@@ -30,19 +33,23 @@ class LoginUi(QWidget):
         self.signin_page = SigninPage()     # 实例化SigninPage()
 
     def layout_init(self):
-        self.grid_layout.addWidget(self.user_label, 0, 0, 1, 1)
-        self.grid_layout.addWidget(self.user_line, 0, 1, 1, 1)
-        self.grid_layout.addWidget(self.pwd_label, 1, 0, 1, 1)
-        self.grid_layout.addWidget(self.pwd_line, 1, 1, 1, 1)
-        self.h_layout.addWidget(self.login_button)
-        self.h_layout.addWidget(self.signin_button)
-        self.v_layout.addLayout(self.grid_layout)
-        self.v_layout.addLayout(self.h_layout)
+        self.h_user_layout.addWidget(self.user_label)
+        self.h_user_layout.addWidget(self.user_line)
+        self.h_password_layout.addWidget(self.pwd_label)
+        self.h_password_layout.addWidget(self.pwd_line)
+        self.h_in_layout.addWidget(self.login_button)
+        self.h_in_layout.addWidget(self.signin_button)
+
+
+        self.v_layout.addLayout(self.h_user_layout)
+        self.v_layout.addLayout(self.h_password_layout)
+        self.v_layout.addLayout(self.h_in_layout)
+
 
         self.setLayout(self.v_layout)
 
     def lineedit_init(self):
-        self.user_line.setPlaceholderText('Please enter your username')
+        self.user_line.setPlaceholderText('Please enter your usernumber')
         self.pwd_line.setPlaceholderText('Please enter your password')
         self.pwd_line.setEchoMode(QLineEdit.Password)
 
@@ -55,16 +62,39 @@ class LoginUi(QWidget):
         self.signin_button.clicked.connect(self.show_signin_page_func)
 
     def check_login_func(self):
-        if USER_PWD.get(self.user_line.text()) == self.pwd_line.text():
-            QMessageBox.information(self, 'Information', 'Log in Successfully!')
+        student = StudentDb()
+        def clear():
+           self.pwd_line.clear()
+           self.user_line.clear()
+        
+        if not self.user_line.text().isdigit():
+            QMessageBox.critical(self, 'Wrong', 'Wrong Username or Password!') 
+            clear()
+            return 
+        
+        elif len (self.pwd_line.text()) < 6 or len (self.pwd_line.text())>13 :
+            QMessageBox.critical(self, 'Wrong', 'Wrong Username or Password!') 
+            clear()
+            return 
         else:
-            QMessageBox.critical(self, 'Wrong', 'Wrong Username or Password!')
+            user_name = int(self.user_line.text())
+            item = student.c.execute("select id_number,salt, password  from admin where id_number = {} ".format(user_name)).fetchall()[0]
+            if len(item) != 1:
+                password  = self.pwd_line.text()
+                pass_word = MyMd5().create_md5(password,item[1])
+                if pass_word == item[2]:
+                   self.emitsingal.emit()
+                else: 
+                    QMessageBox.critical(self, 'Wrong', 'Wrong Username or Password!')    
+                    clear()
+                    return 
+            else:QMessageBox.critical(self, 'Wrong', 'This User not exits')
 
-        self.user_line.clear()
-        self.pwd_line.clear()
+       
 
+       
     def show_signin_page_func(self):
-        self.signin_page.exec_()
+        self.signin_page.show()
 
     def check_input_func(self):
         if self.user_line.text() and self.pwd_line.text():
@@ -72,7 +102,8 @@ class LoginUi(QWidget):
         else:
             self.login_button.setEnabled(False)
     def closeEvent(self, event) :
-        self.emitsingal.emit() 
+        #self.emitsingal.emit() 
+        pass
 
 class SigninPage(QDialog):
     def __init__(self):
@@ -89,6 +120,7 @@ class SigninPage(QDialog):
         self.pwd_h_layout = QHBoxLayout()
         self.pwd2_h_layout = QHBoxLayout()
         self.all_v_layout = QVBoxLayout()
+        self.resize(300,200)
 
         self.lineedit_init()
         self.pushbutton_init()
@@ -128,18 +160,47 @@ class SigninPage(QDialog):
             self.signin_button.setEnabled(False)
 
     def check_signin_func(self):
-        if self.signin_pwd_line.text() != self.signin_pwd2_line.text():
+        student = StudentDb()
+        def clear():
+            self.signin_user_line.clear()
+            self.signin_pwd_line.clear()
+            self.signin_pwd2_line.clear()
+
+        if not self.signin_user_line.text().isdigit():
+           
+            QMessageBox.critical(self, 'Wrong', 'Usernumber is only digit!')
+            clear()
+            return 
+        elif self.signin_pwd_line.text() != self.signin_pwd2_line.text():
             QMessageBox.critical(self, 'Wrong', 'Two Passwords Typed Are Not Same!')
-        elif self.signin_user_line.text() not in USER_PWD:
-            USER_PWD[self.signin_user_line.text()] = self.signin_pwd_line.text()
-            QMessageBox.information(self, 'Information', 'Register Successfully')
-            self.close()
+            clear()
+            return 
+        
+        
+        elif len (self.signin_pwd_line.text()) <6 or len (self.signin_pwd_line.text())>13 :
+            QMessageBox.critical(self, 'Wrong', ' Passwords is too short!')
+            clear()
+            return 
         else:
-            QMessageBox.critical(self, 'Wrong', 'This Username Has Been Registered!')
+            user_name = self.signin_user_line.text()
+            user = student.c.execute("select id_number from admin where id_number = {} ".format(user_name)).fetchall()
+            if len(user) == 1:
+               QMessageBox.critical(self, 'Wrong', 'This Username Has Been Registered!')
+               clear()
+               return 
+            else:
+                
+                user_name = int(self.signin_user_line.text())
+                pass_word = self.signin_pwd_line.text()
+                salt = MyMd5().create_salt()
+                pass_word = MyMd5().create_md5(pass_word,salt)
 
-        self.signin_user_line.clear()
-        self.signin_pwd_line.clear()
-        self.signin_pwd2_line.clear()
-    
+                student.c.execute("INSERT INTO admin (id_number,password,salt) \
+      VALUES (?, ?,?)",(user_name,pass_word,salt))
+                QMessageBox.information(self, 'Information', 'Register Successfully')
+                student.conn.commit()
+                student.conn.close()
+                self.close
 
+                
        

@@ -42,10 +42,6 @@ class CreatUser():
         face_data = np.ndarray.dumps(face_data)
         return face_data
 
-    
-    
-           
-
 class CreatStudentUser(CreatUser):
     def __init__(self):
         super().__init__()
@@ -79,8 +75,22 @@ class CreatStudentUser(CreatUser):
                 else:  
                     list_problem.append("第{0}行第1列格式非文本格式 ".format(i) + str(list1[0]))
                     continue
-                list1[1] = str(list1[1])
-                list1[2] = str(list1[2])
+                
+                lenth = len(str(list1[1]))
+                if lenth < 16 and lenth != 0:
+                    list1[1] = str(list1[1])
+                    
+                else:
+                    list_problem.append("第{0}行第2列,用户名过长: ".format(i) + str(int(list1[0])))
+                    continue
+
+                lenth = len(str(list1[2]))
+                if lenth < 13 and lenth > 6:
+                    list1[2] = str(list1[2])
+                    
+                else:
+                    list_problem.append("第{0}行第3列,密码过长: ".format(i) + str(int(list1[0])))
+                    continue
 
                 list1[3] = str(list1[3])
                 path =  Path(list1[3])
@@ -97,9 +107,10 @@ class CreatStudentUser(CreatUser):
                 information =  self.set_information(dic)
                 self.insert_user(information)
                
-               
+        student.c.close()    
         for j in list_problem:        
             print("错误信息：",j)
+
     def set_information(self, part_information):
         information = {}
         information["user_name"] = part_information["user_name"]

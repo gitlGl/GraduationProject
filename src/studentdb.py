@@ -21,6 +21,7 @@ class StudentDb():
         cout              INT,
         PRIMARY KEY (id_number )
                  )without rowid;''')
+                 
         self.c.execute('''CREATE TABLE IF NOT EXISTS student_log_time
        ( 
         id_number            INT   NOT NULL ,
@@ -29,6 +30,16 @@ class StudentDb():
        
       
         );''')
+
+        self.c.execute('''CREATE TABLE IF NOT EXISTS admin
+       ( 
+        id_number            INT   NOT NULL ,
+       
+        password        char(20)    NOT NULL,
+        salt            char(10)  NOT NULL ,
+        PRIMARY KEY (id_number )
+                 )without rowid;''')
+       
         self.conn.commit()
 
     def insert_user(self, id_number, user_name, password, img_path, vector, salt):

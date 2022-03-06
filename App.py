@@ -9,6 +9,7 @@ from PyQt5.QtCore import pyqtSlot, QObject
 from src import Ui
 from PyQt5.QtGui import *
 import time
+import gc
 from src import LoginUi
 from src.Process import process_student_rg
 class APP(QObject):
@@ -22,6 +23,7 @@ class APP(QObject):
     @pyqtSlot()
     def init(self):
         del self.login_ui
+        gc.collect()
         self.creat_folder()
         self.Q1 = Queue()  # open_capture
         self.Q2 = Queue()
