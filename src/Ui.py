@@ -144,5 +144,4 @@ class Ui(QWidget):
         if hasattr(self.open_capture,"cap"):
             
             self.open_capture.close()
-        
-           
+    

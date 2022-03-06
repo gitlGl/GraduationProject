@@ -2,9 +2,6 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QMessageBox
 from PyQt5.QtCore import pyqtSignal
-USER_PWD = {
-        'la_vie': 'password'
-    }
 from src.Studentdb import StudentDb
 from src.MyMd5 import MyMd5
 class LoginUi(QWidget):
@@ -94,7 +91,8 @@ class LoginUi(QWidget):
 
        
     def show_signin_page_func(self):
-        self.signin_page.show()
+        #self.signin_page.show()
+        self.signin_page.exec_()
 
     def check_input_func(self):
         if self.user_line.text() and self.pwd_line.text():

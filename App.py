@@ -10,6 +10,7 @@ from src import Ui
 from PyQt5.QtGui import *
 import time
 import gc
+from src import Help
 from src import LoginUi
 from src.Process import process_student_rg
 class APP(QObject):
@@ -36,6 +37,7 @@ class APP(QObject):
         self.ui.btn1.clicked.connect(self.open_eye)
         self.ui.btn2.clicked.connect(self.open_normal)
         self.ui.btn3.clicked.connect(self.open)
+        self.ui.btn5.clicked.connect(self.help)
     def creat_folder(self):
         if not os.path.exists("img_information"):  # 判断是否存在文件夹如果不存在则创建文件夹
             os.makedirs("img_information")
@@ -215,7 +217,10 @@ class APP(QObject):
             psutil.Process(self.p.pid).suspend()  # 挂起进程
         
         self.ui.qlabel.clear()
-
+    def help(self):
+        self.help_qlabe = Help()
+        self.help_qlabe.exec_()     
+           
  
 if __name__ == '__main__':
 
