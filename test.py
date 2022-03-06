@@ -15,14 +15,17 @@ class timerexec():
 class test(QWidget):
     def __init__(self):
         super().__init__()
-        self.id = random.randint(1, 20)
+        # self.id = random.randint(1, 20)
        
-        #self.vector = CreatUser().get_vector(self.id)
-        dic = {"id_number":self.id,"user_name":"lin","password":"123456","img_path":None }
-        CreatUser(dic)
-        a = timerexec()
+        # #self.vector = CreatUser().get_vector(self.id)
+        # dic = {"id_number":self.id,"user_name":"lin","password":"123456","img_path":None }
+        # CreatUser(dic)
+        # a = timerexec()
 
-        
+    def te(self,str):
+        print(type(str))
+        print ("" is type(str))
+        pass    
 
 if __name__ == '__main__':
   
@@ -30,6 +33,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     
     test1 = test()
+    test1.te(str)
     
     
     app.exec()

@@ -75,35 +75,31 @@ class CreatUser():
                 elif type(list1[0]) is float:
                    list1[0] = int(list1[0])
                 else:
-                    string = ""
-                    for j in list1:
-                        string = string + str(j) + "  "
-                    string = "第{0}行: ".format(i)+string
+                    string = "第{0}行第1列: ".format(i)+ str(list1[0])
                     list_problem.append(string)
                     continue
                    
                 list1[1] = str(list1[1])
                 list1[2] = str(list1[2])
+
                 list1[3] = str(list1[3])
                 path =  Path(list1[3])
                
                 if path.is_file():
                     pass
                 else:
-                    string = ""
-                    for k in list1:
-                        string = string + str(k)+ "  "
-                    string = "第{0}行: ".format(i)+string
+                    string = "第{0}行第4列: ".format(i)+str(list1[3])
                     list_problem.append(string)
                     continue
+
        
                 list2 = ["id_number","user_name","password","img_path" ]
                 dic = dict(zip(list2,list1))
                 information =  self.set_information(dic)
                 self.insert_user(information)
-                print("正确信息:",dic)
-        for f in list_problem:        
-            print("错误信息：",f) 
+               
+        for j in list_problem:        
+            print("错误信息：",j) 
 
     def set_information(self, part_information):
         information = {}
